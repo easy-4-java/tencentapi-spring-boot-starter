@@ -63,7 +63,7 @@ public class TencentTimAccountOperations extends TencentTimOperations {
 	 */
 	public AccountsImportResponse aImport(String... userIds) {
 		Map<String, Object> requestBody = new ImmutableMap.Builder<String, Object>()
-				.put("Accounts", Stream.of(userIds).map(uid -> this.getImUserByUserId(uid)).collect(Collectors.toList()))
+				.put("Accounts", Stream.of(userIds).map(this::getImUserByUserId).collect(Collectors.toList()))
 				.build();
 		return super.request(TimApiAddress.MULTI_ACCOUNT_IMPORT, requestBody, AccountsImportResponse.class);
 	}
@@ -76,9 +76,9 @@ public class TencentTimAccountOperations extends TencentTimOperations {
 	 */
 	public AccountDeleteResponse delete(String... userIds) {
 		Map<String, Object> requestBody = new ImmutableMap.Builder<String, Object>()
-				.put("DeleteItem", Stream.of(userIds).map(uid -> {
+				.put("DeleteItem", Stream.of(userIds).map(userId -> {
 					Map<String, Object> userMap = new HashMap<>();
-					userMap.put("UserID", this.getImUserByUserId(uid));
+					userMap.put("UserID", this.getImUserByUserId(userId));
 					return userMap;
 				}).collect(Collectors.toList()))
 				.build();
@@ -93,9 +93,9 @@ public class TencentTimAccountOperations extends TencentTimOperations {
 	 */
 	public AccountCheckResponse check(String... userIds) {
 		Map<String, Object> requestBody = new ImmutableMap.Builder<String, Object>()
-				.put("CheckItem", Stream.of(userIds).map(uid -> {
+				.put("CheckItem", Stream.of(userIds).map(userId -> {
 					Map<String, Object> userMap = new HashMap<>();
-					userMap.put("UserID", this.getImUserByUserId(uid));
+					userMap.put("UserID", this.getImUserByUserId(userId));
 					return userMap;
 				}).collect(Collectors.toList()))
 				.build();
@@ -124,7 +124,7 @@ public class TencentTimAccountOperations extends TencentTimOperations {
 	 */
 	public AccountStateResponse getState(boolean needDetail, String... userIds) {
 		ImmutableMap.Builder<String, Object> builder = new ImmutableMap.Builder<String, Object>()
-			.put("To_Account", Stream.of(userIds).map(uid -> this.getImUserByUserId(uid)).collect(Collectors.toList()));
+			.put("To_Account", Stream.of(userIds).map(this::getImUserByUserId).collect(Collectors.toList()));
 		if(needDetail) {
 			builder.put("IsNeedDetail", 1);
 		}

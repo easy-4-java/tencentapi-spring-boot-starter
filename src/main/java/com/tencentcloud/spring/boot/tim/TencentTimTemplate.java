@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import lombok.Getter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -51,18 +52,26 @@ public class TencentTimTemplate implements InitializingBean {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	private TencentTimProperties timProperties;
-	private TLSSigAPIv2 tlsSigAPIv2;
+	@Getter
+    private TLSSigAPIv2 tlsSigAPIv2;
 	private OkHttpClient okhttp3Client;
-	private TimUserIdProvider timUserIdProvider;
+	private TimInfoProvider timInfoProvider;
 
+	@Getter
 	private final TencentTimAccountAsyncOperations accountOps = new TencentTimAccountAsyncOperations(this);
+	@Getter
 	private final TencentTimAllMemberPushAsyncOperations pushOps = new TencentTimAllMemberPushAsyncOperations(this);
+	@Getter
 	private final TencentTimGroupAsyncOperations groupOps = new TencentTimGroupAsyncOperations(this);
+	@Getter
 	private final TencentTimNospeakingAsyncOperations noSpeakingOps = new TencentTimNospeakingAsyncOperations(this);
+	@Getter
 	private final TencentTimOpenimAsyncOperations imOps = new TencentTimOpenimAsyncOperations(this);
+	@Getter
 	private final TencentTimProfileAsyncOperations profileOps = new TencentTimProfileAsyncOperations(this);
+	@Getter
 	private final TencentTimSnsAsyncOperations snsOps = new TencentTimSnsAsyncOperations(this);
-	private LoadingCache<String, String> tlsSigCache;
+	private final LoadingCache<String, String> tlsSigCache;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -71,17 +80,17 @@ public class TencentTimTemplate implements InitializingBean {
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
-	public TencentTimTemplate(TencentTimProperties timProperties, OkHttpClient okhttp3Client, TimUserIdProvider timUserIdProvider) {
+	public TencentTimTemplate(TencentTimProperties timProperties, OkHttpClient okhttp3Client, TimInfoProvider timInfoProvider) {
 		this(timProperties, new TLSSigAPIv2(timProperties.getSdkappid(), timProperties.getPrivateKey()),
-				okhttp3Client, timUserIdProvider);
+				okhttp3Client, timInfoProvider);
 	}
 
 	public TencentTimTemplate(TencentTimProperties timProperties, TLSSigAPIv2 tlsSigAPIv2,
-			OkHttpClient okhttp3Client, TimUserIdProvider timUserIdProvider) {
+			OkHttpClient okhttp3Client, TimInfoProvider timInfoProvider) {
 		this.timProperties = timProperties;
 		this.tlsSigAPIv2 = tlsSigAPIv2;
 		this.okhttp3Client = okhttp3Client;
-		this.timUserIdProvider = timUserIdProvider;
+		this.timInfoProvider = timInfoProvider;
 		this.tlsSigCache = CacheBuilder.newBuilder()
 						.expireAfterWrite(Duration.ofSeconds(Math.max(timProperties.getExpire() - 60, 60)))
 						.build(new CacheLoader<String, String>() {
@@ -95,34 +104,6 @@ public class TencentTimTemplate implements InitializingBean {
 
 	}
 
-	public TencentTimAccountAsyncOperations opsForAccount() {
-		return accountOps;
-	}
-
-	public TencentTimAllMemberPushAsyncOperations opsForPush() {
-		return pushOps;
-	}
-
-	public TencentTimGroupAsyncOperations opsForGroup() {
-		return groupOps;
-	}
-
-	public TencentTimNospeakingAsyncOperations opsForNoSpeaking() {
-		return noSpeakingOps;
-	}
-
-	public TencentTimOpenimAsyncOperations opsForOpenim() {
-		return imOps;
-	}
-
-	public TencentTimProfileAsyncOperations opsForProfile() {
-		return profileOps;
-	}
-
-	public TencentTimSnsAsyncOperations opsForSns() {
-		return snsOps;
-	}
-
 	public String genUserSig(String identifier) {
 		return tlsSigAPIv2.genUserSig(identifier, timProperties.getExpire());
 	}
@@ -131,11 +112,7 @@ public class TencentTimTemplate implements InitializingBean {
 		return tlsSigAPIv2.genUserSig(identifier, expire);
 	}
 
-	public TLSSigAPIv2 getTlsSigAPIv2() {
-		return tlsSigAPIv2;
-	}
-
-	public long getMsgLifeTime() {
+    public long getMsgLifeTime() {
 		return timProperties.getMsgLifeTime();
 	}
 
@@ -160,11 +137,11 @@ public class TencentTimTemplate implements InitializingBean {
 
 	public <T extends TimActionResponse> T requestInvoke(String url, Object params, Class<T> cls) {
 		long start = System.currentTimeMillis();
-		T res = null;
+		T res;
 		try {
 
 			String paramStr = objectMapper.writeValueAsString(params);
-			log.info("Tim Request Param :  {}", paramStr);
+			log.info("Tim Request Invoke Param :  {}", paramStr);
 
 			RequestBody requestBody = RequestBody.create(APPLICATION_JSON_UTF8, paramStr);
 			Request request = new Request.Builder().url(url).post(requestBody).build();
@@ -221,10 +198,10 @@ public class TencentTimTemplate implements InitializingBean {
 	}
 
 	public String getUserIdByImUser(String account) {
-		return timUserIdProvider.getUserIdByImUser(timProperties.getSdkappid(), account);
+		return timInfoProvider.getUserIdByImUser(timProperties.getSdkappid(), account);
 	}
 
 	public String getImUserByUserId(String userId) {
-		return timUserIdProvider.getImUserByUserId(timProperties.getSdkappid(), userId);
+		return timInfoProvider.getImUserByUserId(timProperties.getSdkappid(), userId);
 	}
 }

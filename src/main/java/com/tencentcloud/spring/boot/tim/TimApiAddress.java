@@ -304,6 +304,9 @@ public enum TimApiAddress {
 
 	private String opt;
 	private String url;
+	private String serviceName;
+	private String command;
+
 	
 	TimApiAddress(String opt, String url) {
 		this.opt = opt;

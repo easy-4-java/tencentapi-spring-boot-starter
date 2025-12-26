@@ -15,13 +15,15 @@
  */
 package com.tencentcloud.spring.boot.tim;
 
-public interface TimUserIdProvider {
+public interface TimInfoProvider {
 
-	default String getUserIdByImUser(Long sdkappid, String account)  {
+	TencentTimOption getTimOptionBySdkAppId(Long sdkAppId);
+
+	default String getUserIdByImUser(Long sdkAppId, String account)  {
 		return account;
 	}
 
-	default String getImUserByUserId(Long sdkappid, String userId) {
+	default String getImUserByUserId(Long sdkAppId, String userId) {
 		return userId;
 	}
 

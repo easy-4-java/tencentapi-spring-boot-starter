@@ -1,7 +1,8 @@
 package com.tencentcloud.spring.boot;
 
+import com.tencentcloud.spring.boot.tim.TencentTimOption;
 import com.tencentcloud.spring.boot.tim.TencentTimTemplate;
-import com.tencentcloud.spring.boot.tim.TimUserIdProvider;
+import com.tencentcloud.spring.boot.tim.TimInfoProvider;
 import com.tencentyun.TLSSigAPIv2;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.ObjectProvider;
@@ -21,13 +22,9 @@ public class TencentTimAutoConfiguration {
 	public TencentTimTemplate tencentTimTemplate(
 			TencentTimProperties timProperties,
 			ObjectProvider<OkHttpClient> okhttp3ClientProvider,
-			ObjectProvider<TimUserIdProvider> timUserIdProvider) {
-		
+			ObjectProvider<TimInfoProvider> timUserIdProvider) {
 		OkHttpClient okhttp3Client = okhttp3ClientProvider.getIfAvailable(() -> new OkHttpClient.Builder().build());
-		
-		return new TencentTimTemplate(timProperties, okhttp3Client, timUserIdProvider.getIfAvailable(() -> {
-			return new TimUserIdProvider() {};
-		}));
+		return new TencentTimTemplate(timProperties, okhttp3Client, timUserIdProvider.getIfAvailable(() -> sdkAppId -> timProperties));
 	}
 
 }

@@ -11,7 +11,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>com.github.hiwepy</groupId>
+	<groupId>io.github.hiwepy</groupId>
 	<artifactId>tencentapi-spring-boot-starter</artifactId>
 	<description>Spring Boot Starter For Tencent API</description>
 	<version>1.0.0.RELEASE</version>

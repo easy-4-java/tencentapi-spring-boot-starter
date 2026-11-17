@@ -89,6 +89,8 @@ No additional easy4j component dependencies.
 
 ## 6. Quick Start
 
+Spring Boot 2.2.10 users can run the [TRTC compatibility test](compatibility-tests/spring-boot-2.2/README.md) for the `tencent.cloud.trtc.enabled` configuration reported in Issue #1.
+
 ### 6.1 Add dependency
 
 Add the dependency above to your `pom.xml`.

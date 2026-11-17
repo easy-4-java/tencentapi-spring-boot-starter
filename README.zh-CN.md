@@ -96,8 +96,13 @@ Starter 自动装配以下 Bean：
 ### 6.2 配置
 
 ```yaml
-tencentapi:
-  enabled: true
+tencent:
+  cloud:
+    trtc:
+      enabled: true
+      secret-id: ${TENCENT_SECRET_ID}
+      secret-key: ${TENCENT_SECRET_KEY}
+      region: ap-guangzhou
 ```
 
 ### 6.3 使用 Bean
@@ -111,25 +116,29 @@ public class Application {
 }
 ```
 
-在业务代码中注入自动装配的 Bean：
+在业务代码中注入自动装配的 TRTC Bean：
 
 ```java
 @Autowired
-private LiveClient tencentLiveClient;
+private TencentTrtcTemplate tencentTrtcTemplate;
 ```
+
+`TencentTrtcAutoConfiguration` 仅在 `tencent.cloud.trtc.enabled=true` 且存在 `TrtcClient` 时创建此 Bean；启用开关默认是 `false`。密钥也可以配置在 `tencent.cloud.secret-id` 和 `tencent.cloud.secret-key`。本分支的 Spring Boot 父版本是 2.6.15；Boot 2.2.x 应选用兼容版本并在应用中做集成测试。
 
 ## 7. 配置参考
 
 ### 7.1 配置前缀
 
-`tencentapi`
+`tencent.cloud.trtc`
 
 ### 7.2 配置项
 
 | 属性 | 类型 | 默认值 | 必填 | 说明 | 敏感 |
 |---|---|---|:---:|---|:---:|
-| `tencentapi.enabled` | boolean | `true` | 否 | 是否启用 Starter | 否 |
-<!-- 更多属性见下方 -->
+| `tencent.cloud.trtc.enabled` | boolean | `false` | 使用 TRTC 时是 | 创建 TRTC Bean | 否 |
+| `tencent.cloud.trtc.secret-id` | string | 无 | 是 | 腾讯云 API ID | 是 |
+| `tencent.cloud.trtc.secret-key` | string | 无 | 是 | 腾讯云 API Key | 是 |
+| `tencent.cloud.trtc.region` | string | 无 | 否 | TRTC 地域 | 否 |
 
 ## 8. 版本线与兼容性
 

@@ -1,0 +1,25 @@
+name: TRTC Spring Boot 2.2 compatibility
+
+on:
+  push:
+    branches: [main, test/20261118]
+  pull_request:
+    branches: [main, test/20261118]
+
+permissions:
+  contents: read
+
+jobs:
+  trtc-boot22:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+      - name: Build current starter and run its own tests
+        run: mvn -B --no-transfer-progress clean install
+      - name: Verify Spring Boot 2.2.10 consumer
+        run: mvn -B --no-transfer-progress -f compatibility-tests/spring-boot-2.2/pom.xml test

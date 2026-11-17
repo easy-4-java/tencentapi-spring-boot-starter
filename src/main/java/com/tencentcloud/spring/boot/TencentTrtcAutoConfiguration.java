@@ -48,7 +48,7 @@ public class TencentTrtcAutoConfiguration {
 	}
 	
 	@Bean
-	@ConditionalOnBean
+	@ConditionalOnBean(TrtcClient.class)
 	public TencentTrtcTemplate tencentTrtcTemplate(TrtcClient trtcClient, TencentTrtcProperties properties,
 			ObjectProvider<TrtcUserIdProvider> trtcUserIdProvider) {
 		return new TencentTrtcTemplate(trtcClient, properties, trtcUserIdProvider.getIfAvailable(() -> {

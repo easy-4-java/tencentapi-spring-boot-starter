@@ -96,8 +96,13 @@ Add the dependency above to your `pom.xml`.
 ### 6.2 Configure
 
 ```yaml
-tencentapi:
-  enabled: true
+tencent:
+  cloud:
+    trtc:
+      enabled: true
+      secret-id: ${TENCENT_SECRET_ID}
+      secret-key: ${TENCENT_SECRET_KEY}
+      region: ap-guangzhou
 ```
 
 ### 6.3 Use the bean
@@ -111,25 +116,29 @@ public class Application {
 }
 ```
 
-Then inject the auto-configured bean in your code:
+Then inject the auto-configured TRTC bean in your code:
 
 ```java
 @Autowired
-private LiveClient tencentLiveClient;
+private TencentTrtcTemplate tencentTrtcTemplate;
 ```
+
+`TencentTrtcAutoConfiguration` only creates this bean when `tencent.cloud.trtc.enabled=true` and `TrtcClient` is on the classpath. The enable flag defaults to `false`. Credentials can also be supplied under `tencent.cloud.secret-id` and `tencent.cloud.secret-key`. This branch uses Spring Boot 2.6.15 as its parent; an application on Boot 2.2.x needs a compatible starter version and its own integration test.
 
 ## 7. Configuration Reference
 
 ### 7.1 Config Prefix
 
-`tencentapi`
+`tencent.cloud.trtc`
 
 ### 7.2 Configuration Items
 
 | Property | Type | Default | Required | Description | Sensitive |
 |---|---|---|:---:|---|:---:|
-| `tencentapi.enabled` | boolean | `true` | No | Enable the starter | No |
-<!-- additional properties below -->
+| `tencent.cloud.trtc.enabled` | boolean | `false` | Yes, for TRTC | Create TRTC beans | No |
+| `tencent.cloud.trtc.secret-id` | string | none | Yes | Tencent Cloud API ID | Yes |
+| `tencent.cloud.trtc.secret-key` | string | none | Yes | Tencent Cloud API key | Yes |
+| `tencent.cloud.trtc.region` | string | none | No | TRTC region | No |
 
 ## 8. Version Lines and Compatibility
 
